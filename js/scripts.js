@@ -14,10 +14,29 @@ let pokemonRepository = (function () {
 		return pokemonList
 	}
 
+	function addListItem(pokemon) {
+		let pokemonList = document.querySelector('.pokemon-list');
+		let listItem = document.createElement('li');
+		let button = document.createElement('button');
+		button.innerText = pokemon.name;
+		button.classList.add('pokemon-button');
+		listItem.appendChild(button);
+		pokemonList.appendChild(listItem);
+		button.addEventListener('click', function (ev) {
+			showDetails(pokemon);
+		});
+	}
+
+	function showDetails(pokemon) {
+		console.log(pokemon);
+
+	}
+
+
 	return {
 		add: add,
-		getAll: getAll
-
+		getAll: getAll,
+		addListItem: addListItem
 	};
 
 }) ();
@@ -28,27 +47,19 @@ pokemonRepository.add({ name: 'Noctowl', height: 1.6, type: ['Flying', 'Normal']
 pokemonRepository.add({ name: 'Azumarill', height: 0.8, type: ['Fairy', 'Water'] });
 pokemonRepository.add({ name: 'Cobalion', height: 2.1, type: ['Steel', 'Fighting'] });
 
-let pokemonList = pokemonRepository.getAll();
-
-
 //forEach() function to iterate over the Pokémon in the pokemonList array (external function)
-pokemonList.forEach(printDetails);
+pokemonRepository.getAll().forEach(printDetails);
 function printDetails (pokemon) {
 	let highlight = '';
 	if (pokemon.height > 2.0) {
 		highlight = " - Wow, that\’s big!";
 	}
-	document.write(`<li>${pokemon.name} (height: ${pokemon.height}) ${highlight}</li>`);
+	pokemonRepository.addListItem(pokemon);
 }
 
- let pokemonNames = [];
- for (let i = 0; i < pokemonList.length; i++) {
-   pokemonNames.push(pokemonList[i].name);
- }
-
 function findPokemons (query) {
-	return pokemonNames.filter(function (name) {
-		return name.toLowerCase().indexOf(query.toLowerCase()) > -1;
+	return pokemonRepository.getAll().filter(function (pokemon) {
+		return pokemon.name.toLowerCase().indexOf(query.toLowerCase()) > -1;
 	});
 }
 
