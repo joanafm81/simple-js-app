@@ -1,9 +1,10 @@
 let pokemonRepository = (function () {
 	
 	let pokemonList = [];
+	let apiURL = 'https://pokeapi.co/api/v2/pokemon/?limit=150';
 
 	function add (pokemon) {
-		if (typeof pokemon === 'object' && pokemon.name && pokemon.height && pokemon.type && Object.keys(pokemon).length === 3) {
+		if (typeof pokemon === 'object' && pokemon.name && pokemon.detailsUrl /*&& pokemon.height && pokemon.type && Object.keys(pokemon).length === 3*/) {
 			pokemonList.push(pokemon);
 		} else {
 			return `${pokemon} is not a Pokémon. Pokémon must be an object with the keys name, height and type`;
@@ -11,7 +12,7 @@ let pokemonRepository = (function () {
 	}
 
 	function getAll () {
-		return pokemonList
+		return pokemonList;
 	}
 
 	function addListItem(pokemon) {
@@ -28,39 +29,87 @@ let pokemonRepository = (function () {
 	}
 
 	function showDetails(pokemon) {
+		pokemonRepository.loadDetails(pokemon).then(function() {
 		console.log(pokemon);
-
+		});
 	}
 
+	function loadList() {
+		showLoadingMessage();
+		return fetch(apiURL).then(function(response) {
+			return response.json();
+		}).then(function(json) {
+			json.results.forEach(function(item) {
+				let pokemon = {
+					name: item.name,
+					detailsUrl: item.url
+				};
+				add(pokemon);
+			});
+
+			hideLoadingMessage();
+		}).catch(function(e) {
+			console.error(e);
+			hideLoadingMessage();
+		});
+	}
+
+	function loadDetails(item) {
+		showLoadingMessage();
+		let url = item.detailsUrl;
+		return fetch(url).then(function(response) {
+			return response.json();
+		}).then(function(details) {
+			item.imageUrl = details.sprites.front_default;
+			item.height = details.height;
+			item.type = details.types;
+			hideLoadingMessage();
+		}).catch(function(e) {
+			console.error(e);
+			hideLoadingMessage();
+		});
+	}
+
+	function showLoadingMessage() {
+		let messages = document.querySelector('#messages');
+		let message = document.createElement('span');
+		message.id = 'loading';		
+		message.innerText= "Loading...";
+		messages.appendChild(message);
+	}
+
+	function hideLoadingMessage() {
+		//let messages = document.querySelector('#messages');
+		let message = document.querySelector('#loading');
+		message.parentElement.removeChild(message);
+	}
 
 	return {
 		add: add,
 		getAll: getAll,
-		addListItem: addListItem
+		addListItem: addListItem,
+		loadList: loadList,
+		loadDetails: loadDetails
 	};
 
 }) ();
 
-pokemonRepository.add({ name: 'Ivysaur', height: 1, type: ['Grass', 'Poison'] });
-pokemonRepository.add({ name: 'Butterfree', height: 1.1, type: ['Bug', 'Flying'] });
-pokemonRepository.add({ name: 'Noctowl', height: 1.6, type: ['Flying', 'Normal'] });
-pokemonRepository.add({ name: 'Azumarill', height: 0.8, type: ['Fairy', 'Water'] });
-pokemonRepository.add({ name: 'Cobalion', height: 2.1, type: ['Steel', 'Fighting'] });
-
 //forEach() function to iterate over the Pokémon in the pokemonList array (external function)
-pokemonRepository.getAll().forEach(printDetails);
-function printDetails (pokemon) {
-	let highlight = '';
-	if (pokemon.height > 2.0) {
-		highlight = " - Wow, that\’s big!";
+pokemonRepository.loadList().then(function() {
+	pokemonRepository.getAll().forEach(printDetails);
+	function printDetails (pokemon) {
+		let highlight = '';
+		// if (pokemon.height > 2.0) {
+		// highlight = " - Wow, that\’s big!";
+		//}
+		pokemonRepository.addListItem(pokemon);
 	}
-	pokemonRepository.addListItem(pokemon);
-}
+
+	console.log(findPokemons('iv'));
+});
 
 function findPokemons (query) {
 	return pokemonRepository.getAll().filter(function (pokemon) {
 		return pokemon.name.toLowerCase().indexOf(query.toLowerCase()) > -1;
 	});
 }
-
-console.log(findPokemons('Iv'))
