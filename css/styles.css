@@ -47,16 +47,6 @@ nav.navbar {
 	background-color: white;
 }
 
-.search {
-border-color: steelblue;
-color:steelblue;
-}
-
-.search:hover {
-	background-color: steelblue;
-	border-color: steelblue;
-}
-
 .pokemon-button {
 	background-color: lightgrey;
 	border: none;

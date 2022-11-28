@@ -22,11 +22,11 @@ let pokemonRepository = (function () {
 		listItem.classList.add('group-list-item');
 		button.innerText = pokemon.name;
 		button.classList.add('pokemon-button', 'btn');
-		button.setAttribute('data-toggle', 'modal');
-		button.setAttribute('data-target', '#pokeModal');
+		button.setAttribute('data-bs-toggle', 'modal');
+		button.setAttribute('data-bs-target', '#pokeModal');
 		listItem.appendChild(button);
 		pokemonList.appendChild(listItem);
-		button.addEventListener('click', function (ev) {
+		button.addEventListener('click', function () {
 			showDetails(pokemon);
 		});
 	}
@@ -38,7 +38,6 @@ let pokemonRepository = (function () {
 	}
 
 	function showModal(pokemon) {
-		let modalHeader = document.querySelector('.modal-header');
 		let modalTitle = document.querySelector('.modal-title');
 		let modalBody = document.querySelector('.modal-body');
  
@@ -100,7 +99,7 @@ let pokemonRepository = (function () {
 		let messages = document.querySelector('#messages');
 		let message = document.createElement('span');
 		message.id = 'loading';		
-		message.innerText= "Loading...";
+		message.innerText= 'Loading...';
 		messages.appendChild(message);
 	}
 
@@ -130,9 +129,9 @@ pokemonRepository.loadList().then(function() {
 	
 });
 
-//Function to find pókemons by name
+/*Function to find pókemons by name (for a future release)
 function findPokemons (query) {
 	return pokemonRepository.getAll().filter(function (pokemon) {
 		return pokemon.name.toLowerCase().indexOf(query.toLowerCase()) > -1;
 	});
-}
+}*/
